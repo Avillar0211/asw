@@ -50,9 +50,16 @@ public class WoTServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+		String author = request.getParameter("author");
+		String tweet_text = request.getParameter("tweet_text");
+		try {
+			Database.insertTweet(author, tweet_text);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// This method does NOTHING but redirect to the main page
-
+		
 		response.sendRedirect(request.getContextPath());
 	}
 
