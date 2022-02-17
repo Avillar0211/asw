@@ -52,15 +52,19 @@ public class WoTServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String author = request.getParameter("author");
 		String tweet_text = request.getParameter("tweet_text");
+		long num = -1;
 		try {
-			Database.insertTweet(author, tweet_text);
+			num = Database.insertTweet(author, tweet_text);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// This method does NOTHING but redirect to the main page
-		
-		response.sendRedirect(request.getContextPath());
+		if (request.getHeader("Accept").equals("text/plain")) {
+			PrintWriter out = response.getWriter();
+			out.print(num);
+		}
+		else response.sendRedirect(request.getContextPath());
 	}
 
 	private void printHTMLresult (Vector<Tweet> tweets, HttpServletRequest req, HttpServletResponse res) throws IOException
