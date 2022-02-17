@@ -34,9 +34,11 @@ public class WoTServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		try {
 			Vector<Tweet> tweets = Database.getTweets();
-			printHTMLresult(tweets, request, response);
+			if (request.getHeader("Accept").equals("text/plain")) printPLAINresult(tweets, request, response);
+			else printHTMLresult(tweets, request, response);
 		}
 
 		catch (SQLException ex ) {
@@ -88,5 +90,13 @@ public class WoTServlet extends HttpServlet {
 			out.println("</div>");
 		}
 		out.println ( "</body></html>" );
+	}
+	
+	private void printPLAINresult (Vector<Tweet> tweets, HttpServletRequest req, HttpServletResponse res) throws IOException
+	{
+		PrintWriter  out = res.getWriter ( );
+		for (Tweet tweet: tweets) {
+			out.println("tweet #" + tweet.getTwid() + ": " + tweet.getAuthor() + ": " + tweet.getText() + " [" + tweet.getDate() + "]");
+		}
 	}
 }
