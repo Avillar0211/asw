@@ -50,19 +50,24 @@ public class WoTServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String author = request.getParameter("author");
-		String tweet_text = request.getParameter("tweet_text");
-		long num = -1;
-		try {
-			num = Database.insertTweet(author, tweet_text);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 		// This method does NOTHING but redirect to the main page
 		if (request.getHeader("Accept").equals("text/plain")) {
+			String author = request.getParameter("author");
+			String tweet_text = request.getParameter("tweet_text");
+			long num = -1;
+			try {
+				num = Database.insertTweet(author, tweet_text);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			PrintWriter out = response.getWriter();
 			out.print(num);
+		}
+		else if (request.getHeader("Accept").equals("delete")) {
+			String twid = request.getParameter("twid");
+			Database.deleteTweet(Long.parseLong(twid));
 		}
 		else response.sendRedirect(request.getContextPath());
 	}
@@ -97,9 +102,12 @@ public class WoTServlet extends HttpServlet {
 			}
 			out.println("<div class=\"wallitem\">");
 			out.println("<h4><em>" + tweet.getAuthor() + "</em> @ "+ timeFormatter.format(tweet.getDate()) +"</h4>");
-			out.println("<p>" + tweet.getText() + "</p>");
-			out.println("<td><input type=\"submit\" name=\"action\" value=\"Esborrar Tweet\"></td></tr>");
+			out.println("<p>" + tweet.getText() + "</p>");		
+			//out.println("<form method=\"post\">");
+			//out.println("<td><input type=\"submit\" name=\"action\" value=\"Tweet!\"></td></tr>"); 
+			//out.println("</form>");
 			out.println("</div>");
+			
 		}
 		out.println ( "</body></html>" );
 	}

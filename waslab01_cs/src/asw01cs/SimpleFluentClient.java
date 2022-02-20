@@ -11,18 +11,29 @@ public class SimpleFluentClient {
 
 	public final static void main(String[] args) throws Exception {
 		
-    	/* Insert code for Task #4 here */
+    	/* Insert code for Task #4 here */ //Fa un INSERT
 		
-		// The fluent API relieves the user from having to deal with manual deallocation of system
-		// resources at the cost of having to buffer response content in memory in some cases.
-		
-		System.out.println(Request.Post(URI)
+		/*
+		 * System.out.println(Request.Post(URI)
 			.bodyForm(Form.form().add("author", "hector").add("tweet_text", "no me gustan los trenes").build())
 			.addHeader("Accept", "text/plain").execute().returnContent());
+		 */
+		
+		//Fa print de tots els tweets de la base de dades
+		
+    	//System.out.println(Request.Get(URI).addHeader("Accept", "text/plain").execute().returnContent());
+    	
+    	/* Insert code for Task #5 here */ //Elimina un tweet
+
+		Request.Post(URI)
+    		.bodyForm(Form.form().add("twid", "101").build())
+    		.addHeader("Accept", "delete").execute().returnContent();
+    	
+    	
+    	//Fa print de tots els tweets de la base de dades
     	
     	System.out.println(Request.Get(URI).addHeader("Accept", "text/plain").execute().returnContent());
     	
-    	/* Insert code for Task #5 here */
     }
 }
 
