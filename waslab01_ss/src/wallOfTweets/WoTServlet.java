@@ -34,7 +34,6 @@ public class WoTServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
 		try {
 			Vector<Tweet> tweets = Database.getTweets();
 			if (request.getHeader("Accept").equals("text/plain")) printPLAINresult(tweets, request, response);
@@ -50,23 +49,23 @@ public class WoTServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		// This method does NOTHING but redirect to the main page
-		if (request.getHeader("Accept").equals("text/plain")) {
-			String author = request.getParameter("author");
-			String tweet_text = request.getParameter("tweet_text");
-			long num = -1;
+		String author = request.getParameter("author");
+		String tweet_text = request.getParameter("tweet_text");
+		String twid = request.getParameter("twid");
+		long num = -1;
+		if (twid == null)
 			try {
 				num = Database.insertTweet(author, tweet_text);
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		// This method does NOTHING but redirect to the main page
+		if (request.getHeader("Accept").equals("text/plain")) {
 			PrintWriter out = response.getWriter();
 			out.print(num);
 		}
 		else if (request.getHeader("Accept").equals("delete")) {
-			String twid = request.getParameter("twid");
 			Database.deleteTweet(Long.parseLong(twid));
 		}
 		else response.sendRedirect(request.getContextPath());
