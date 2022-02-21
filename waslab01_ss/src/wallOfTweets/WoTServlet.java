@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -51,24 +52,29 @@ public class WoTServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String author = request.getParameter("author");
 		String tweet_text = request.getParameter("tweet_text");
+		/* Como hacemos para borrar un tweet
+		 * En el cliente enviamos solo un parametro, el twid
+		 * Desde la pagina enviamos con el boton el twid del tweet en cuestion
+		 * A partir de si cuando extraemos el twid del request es nulo o no, identificamos si el cliente quiere borrar o no un tweet
+		 */
 		String twid = request.getParameter("twid");
 		long num = -1;
-		if (twid == null)
+		if (twid == null) //Insert de un tweet
 			try {
 				num = Database.insertTweet(author, tweet_text);
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		else if (twid != null) { //Delete de un tweet
+			Database.deleteTweet(Long.parseLong(twid));			
+		}
 		// This method does NOTHING but redirect to the main page
 		if (request.getHeader("Accept").equals("text/plain")) {
 			PrintWriter out = response.getWriter();
 			out.print(num);
 		}
-		else if (request.getHeader("Accept").equals("delete")) {
-			Database.deleteTweet(Long.parseLong(twid));
-		}
-		else response.sendRedirect(request.getContextPath());
+		else response.sendRedirect(request.getContextPath()); //Actualiza la web
 	}
 
 	private void printHTMLresult (Vector<Tweet> tweets, HttpServletRequest req, HttpServletResponse res) throws IOException
@@ -100,13 +106,19 @@ public class WoTServlet extends HttpServlet {
 				currentDate = messDate;
 			}
 			out.println("<div class=\"wallitem\">");
-			out.println("<h4><em>" + tweet.getAuthor() + "</em> @ "+ timeFormatter.format(tweet.getDate()) +"</h4>");
-			out.println("<p>" + tweet.getText() + "</p>");		
-			//out.println("<form method=\"post\">");
-			//out.println("<td><input type=\"submit\" name=\"action\" value=\"Tweet!\"></td></tr>"); 
-			//out.println("</form>");
+			out.println("<form method=\"post\">");
+			out.println("<tr><h4><em>" + tweet.getAuthor() + "</em> @ "+ timeFormatter.format(tweet.getDate()) +"</h4>");
+			out.println("<p>" + tweet.getText() + "</p>");	
+			/* Insert del boton
+			 * Boton tipo submit pq queremos enviar una informacion
+			 * Como lo que identifica un tweet es su twid debemos hacer q en el formulario enviado esté su twid
+			 * He descubierto que se puede añadir un parametro a un formulario pero que no se muestre en la pagina
+			 * -> input type=\"hidden\"
+			 */
+			out.println("<td><input type=\"submit\" name=\"action\" value=\"Borrar Tweet\"></td></tr>"); 
+			out.println("<tr><td><input type=\"hidden\" name=\"twid\" value=" + tweet.getTwid() + "></td></tr>");
+			out.println("</form>");
 			out.println("</div>");
-			
 		}
 		out.println ( "</body></html>" );
 	}
