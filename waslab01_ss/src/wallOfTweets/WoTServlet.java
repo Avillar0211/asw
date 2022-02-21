@@ -110,7 +110,7 @@ public class WoTServlet extends HttpServlet {
 			out.println("<tr><h4><em>" + tweet.getAuthor() + "</em> @ "+ timeFormatter.format(tweet.getDate()) +"</h4>");
 			out.println("<p>" + tweet.getText() + "</p>");	
 			/* Insert del boton
-			 * Boton tipo submit pq queremos enviar una informacion
+			 * Boton tipo submit porque queremos enviar una informacion
 			 * Como lo que identifica un tweet es su twid debemos hacer q en el formulario enviado esté su twid
 			 * He descubierto que se puede añadir un parametro a un formulario pero que no se muestre en la pagina
 			 * -> input type=\"hidden\"
