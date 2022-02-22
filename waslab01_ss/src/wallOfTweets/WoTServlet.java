@@ -2,6 +2,10 @@ package wallOfTweets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.Date;
@@ -10,9 +14,11 @@ import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * Servlet implementation class WoTServlet
@@ -40,7 +46,6 @@ public class WoTServlet extends HttpServlet {
 			if (request.getHeader("Accept").equals("text/plain")) printPLAINresult(tweets, request, response);
 			else printHTMLresult(tweets, request, response);
 		}
-
 		catch (SQLException ex ) {
 			throw new ServletException(ex);
 		}
@@ -59,22 +64,34 @@ public class WoTServlet extends HttpServlet {
 		 */
 		String twid = request.getParameter("twid");
 		long num = -1;
-		if (twid == null) //Insert de un tweet
+		if (twid == null) {
 			try {
 				num = Database.insertTweet(author, tweet_text);
-			} catch (SQLException e) {
+				response.addCookie(new Cookie(String.valueOf(num), getMd5(String.valueOf(num))));
+			} catch (SQLException | NoSuchAlgorithmException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
 		else if (twid != null) { //Delete de un tweet
-			Database.deleteTweet(Long.parseLong(twid));			
+			if (request.getCookies().length != 0) {
+				for (Cookie cookie: request.getCookies()) {
+					try {
+						if (cookie.getValue().equals(getMd5(twid))) Database.deleteTweet(Long.parseLong(twid));
+					} catch (NumberFormatException | NoSuchAlgorithmException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			//Database.deleteTweet(Long.parseLong(twid)); Para borrar tweets q no se pueden borrar con el boton
 		}
 		// This method does NOTHING but redirect to the main page
 		if (request.getHeader("Accept").equals("text/plain")) {
 			PrintWriter out = response.getWriter();
-			out.print(num);
+			out.println(num);
 		}
-		else response.sendRedirect(request.getContextPath()); //Actualiza la web
+		else response.sendRedirect(request.getContextPath()); //Actualiza
 	}
 
 	private void printHTMLresult (Vector<Tweet> tweets, HttpServletRequest req, HttpServletResponse res) throws IOException
@@ -129,5 +146,15 @@ public class WoTServlet extends HttpServlet {
 		for (Tweet tweet: tweets) {
 			out.println("tweet #" + tweet.getTwid() + ": " + tweet.getAuthor() + ": " + tweet.getText() + " [" + tweet.getDate() + "]");
 		}
+		for(Cookie cookie: req.getCookies()) {
+			out.print(cookie.getName()+" : " + cookie.getValue());
+		}
 	}
+	
+	public static String getMd5(String input) throws NoSuchAlgorithmException, UnsupportedEncodingException
+    {
+		MessageDigest md = MessageDigest.getInstance("MD5");
+	    md.update(input.getBytes("UTF-8"));
+	    return String.format("%032x", new BigInteger(1, md.digest()));
+    }
 }

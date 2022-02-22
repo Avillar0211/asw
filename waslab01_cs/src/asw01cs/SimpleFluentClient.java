@@ -14,9 +14,11 @@ public class SimpleFluentClient {
 		
     	/* Insert code for Task #4 here */ //Insert tweet
 		
+		
 		String id = Request.Post(URI)
-				.bodyForm(Form.form().add("author", "hector").add("tweet_text", "no me gustan los trenes").build())
-				.addHeader("Accept", "text/plain").execute().returnContent().asString();
+			.bodyForm(Form.form().add("author", "hector").add("tweet_text", "no me gustan los trenes").build())
+			.addHeader("Accept", "text/plain").execute().returnContent().asString();
+		
 		
 		//Fa print de tots els tweets de la base de dades
 		
@@ -24,14 +26,9 @@ public class SimpleFluentClient {
     	
     	/* Insert code for Task #5 here */ //Delete tweet
 
-		Request.Post(URI)
-    		.bodyForm(Form.form().add("twid", id).build())
-    		.addHeader("Accept", "delete").execute().returnContent();
-    	
-    	//Fa print de tots els tweets de la base de dades
-    	
-    	System.out.println(Request.Get(URI).addHeader("Accept", "text/plain").execute().returnContent());
-    	
+    	Request.Post(URI) 
+			.bodyForm(Form.form().add("twid", id).build())
+			.addHeader("Accept", "delete").execute().returnContent();	
     }
 }
 
