@@ -84,12 +84,13 @@ public class WoTServlet extends HttpServlet {
 					}
 				}
 			}
-			//Database.deleteTweet(Long.parseLong(twid)); Para borrar tweets q no se pueden borrar con el boton
+			//Para borrar tweets q no se pueden borrar con el boton
+			//Database.deleteTweet(Long.parseLong(twid)); 
 		}
 		// This method does NOTHING but redirect to the main page
 		if (request.getHeader("Accept").equals("text/plain")) {
 			PrintWriter out = response.getWriter();
-			out.println(num);
+			out.print(num);
 		}
 		else response.sendRedirect(request.getContextPath()); //Actualiza
 	}
@@ -145,9 +146,6 @@ public class WoTServlet extends HttpServlet {
 		PrintWriter  out = res.getWriter ( );
 		for (Tweet tweet: tweets) {
 			out.println("tweet #" + tweet.getTwid() + ": " + tweet.getAuthor() + ": " + tweet.getText() + " [" + tweet.getDate() + "]");
-		}
-		for(Cookie cookie: req.getCookies()) {
-			out.print(cookie.getName()+" : " + cookie.getValue());
 		}
 	}
 	

@@ -13,8 +13,7 @@ public class SimpleFluentClient {
 	public final static void main(String[] args) throws Exception {
 		
     	/* Insert code for Task #4 here */ //Insert tweet
-		
-		
+				
 		String id = Request.Post(URI)
 			.bodyForm(Form.form().add("author", "hector").add("tweet_text", "no me gustan los trenes").build())
 			.addHeader("Accept", "text/plain").execute().returnContent().asString();
@@ -25,10 +24,10 @@ public class SimpleFluentClient {
     	System.out.println(Request.Get(URI).addHeader("Accept", "text/plain").execute().returnContent());
     	
     	/* Insert code for Task #5 here */ //Delete tweet
-
+    	
     	Request.Post(URI) 
 			.bodyForm(Form.form().add("twid", id).build())
-			.addHeader("Accept", "delete").execute().returnContent();	
+			.addHeader("Accept", "delete").execute();
     }
 }
 
